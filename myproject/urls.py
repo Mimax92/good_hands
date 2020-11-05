@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from myapp.views import indexView
+from myapp.views import IndexView, FormView, FormConfirView, LoginView, RegisterView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', indexView)
+    path('', IndexView.as_view(), name="indexpage"),
+    path('form', FormView.as_view(), name="formpage"),
+    path('form-confirmation', FormConfirView.as_view()),
+    path('login', LoginView.as_view(), name="login"),
+    path('register', RegisterView.as_view(), name="register"),
 ]
