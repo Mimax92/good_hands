@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function() {
        * Pagination buttons
        */
       this.$el.addEventListener("click", e => {
-        if (e.target.classList.contains("btn") && e.target.parentElement.parentElement.classList.contains("help--slides-pagination")) {
+        if (e.target.classList.contains("btn") && e.target.parentElement.parentElement.parentElement.classList.contains("help--slides-pagination")) {
           this.changePage(e);
         }
       });
