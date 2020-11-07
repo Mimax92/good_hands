@@ -3,9 +3,7 @@
 {% block content%}
 
 
-          <li><a href="{% url 'login' %}" class="btn btn--small btn--without-border">Zaloguj</a></li>
-          <li><a href="{% url 'register' %}#" class="btn btn--small btn--highlighted">Załóż konto</a></li>
-        </ul>
+
 
 {% include "mainbar.html" %}
       </nav>
@@ -105,17 +103,17 @@
                         </ul>
                 <ul class="help--slides-pagination">
                 {% if fundations.has_previous %}
-                    <li style="list-style-type: none;"><a href="?page-f={{ fundations.previous_page_number }}" class="btn btn--small btn--without-border"><</a></li>
+                    <a href="?page-f={{ fundations.previous_page_number }}" class="btn btn--small btn--without-border"><</a>
                 {% endif %}
                 {% for num in fundations.paginator.page_range %}
                 {% if fundations.number == num %}
-                <li><a href="?page-f={{ num }}" class="btn btn--small btn--without-border active">{{ num }}</a></li>
+                <a href="?page-f={{ num }}" class="btn btn--small btn--without-border active">{{ num }}</a>
                 {% elif num > fundations.number|add:'-2' and num < fundations.number|add:'2' %}
-                    <li><a href="?page-f={{ num }}" class="btn btn--small btn--without-border">{{ num }}</a></li>
+                    <a href="?page-f={{ num }}" class="btn btn--small btn--without-border">{{ num }}</a>
                 {% endif %}
                 {% endfor %}
                 {% if fundations.has_next %}
-                    <li><a href="?page-f={{ fundations.next_page_number }}" class="btn btn--small btn--without-border">></a></li>
+                    <a href="?page-f={{ fundations.next_page_number }}" class="btn btn--small btn--without-border">></a>
                 {% endif %}
                         </ul>
      </div>
@@ -144,17 +142,17 @@
         </ul>
                 <ul class="help--slides-pagination" >
                 {% if organizations.has_previous %}
-                    <li style="list-style-type: none;" data-id="2" ><a href="?page-o={{ organizations.previous_page_number }}" class="btn btn--small btn--without-border"><</a></li>
+                    <a href="?page-o={{ organizations.previous_page_number }}" class="btn btn--small btn--without-border"><</a>
                 {% endif %}
                 {% for num in organizations.paginator.page_range %}
                 {% if organizations.number == num %}
-                <li data-id="2"><a href="?page-o={{ num }}" class="btn btn--small btn--without-border active">{{ num }}</a></li>
+                <a href="?page-o={{ num }}" class="btn btn--small btn--without-border active">{{ num }}</a>
                 {% elif num > organizations.number|add:'-2' and num < organizations.number|add:'2' %}
-                    <li data-id="2" ><a href="?page-o={{ num }}" class="btn btn--small btn--without-border">{{ num }}</a></li>
+                    <a href="?page-o={{ num }}" class="btn btn--small btn--without-border">{{ num }}</a>
                 {% endif %}
                 {% endfor %}
                 {% if organizations.has_next %}
-                    <li data-id="2"><a href="?page-o={{ organizations.next_page_number }}" class="btn btn--small btn--without-border">></a></li>
+                    <a href="?page-o={{ organizations.next_page_number }}" class="btn btn--small btn--without-border">></a>
                 {% endif %}
                         </ul>
           </div>
@@ -181,17 +179,17 @@
 
                 <ul class="help--slides-pagination" >
                 {% if collections.has_previous %}
-                    <li style="list-style-type: none;" data-id="2" ><a href="?page-c={{ collections.previous_page_number }}" class="btn btn--small btn--without-border"><</a></li>
+                    <a href="?page-c={{ collections.previous_page_number }}" class="btn btn--small btn--without-border"><</a>
                 {% endif %}
                 {% for num in collections.paginator.page_range %}
                 {% if collections.number == num %}
-                <li data-id="2"><a href="?page-c={{ num }}" class="btn btn--small btn--without-border active">{{ num }}</a></li>
+                <a href="?page-c={{ num }}" class="btn btn--small btn--without-border active">{{ num }}</a>
                 {% elif num > collections.number|add:'-2' and num < collections.number|add:'2' %}
-                    <li data-id="2" ><a href="?page-c={{ num }}" class="btn btn--small btn--without-border">{{ num }}</a></li>
+                    <a href="?page-c={{ num }}" class="btn btn--small btn--without-border">{{ num }}</a>
                 {% endif %}
                 {% endfor %}
                 {% if collections.has_next %}
-                    <li data-id="2"><a href="?page-c={{ collections.next_page_number }}" class="btn btn--small btn--without-border">></a></li>
+                    <a href="?page-c={{ collections.next_page_number }}" class="btn btn--small btn--without-border">></a>
                 {% endif %}
                         </ul>
 

@@ -3,6 +3,10 @@ from django.shortcuts import render
 from .models import Instytution, Donation, Category
 from django.views import View
 from django.core.paginator import Paginator
+from .forms import CreateUserForm
+from django.contrib.auth import get_user_model, authenticate, logout, login
+from django.shortcuts import redirect
+
 # Create your views here.
 
 
@@ -51,8 +55,28 @@ class FormConfirView(View):
 class LoginView(View):
     def get(self, request):
         return render(request, "login.html", )
+    def post(self, request):
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('/')
+        return redirect('/register')
 
 
 class RegisterView(View):
     def get(self, request):
-        return render(request, "register.html", )
+        form = CreateUserForm()
+        ctx = {
+            "form": form
+        }
+        return render(request, "register.html", ctx)
+    def post(self, request):
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            form.cleaned_data.pop("repeated_password")
+            user = get_user_model().objects.create_user(**form.cleaned_data)
+            return redirect("/login")
+        return render(request, "register.html", {"form": form})
+

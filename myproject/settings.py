@@ -126,3 +126,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # STATICFILES_DIRS = (
 #   os.path.join(BASE_DIR, 'static'),
 # )
+
+LOGOUT_REDIRECT_URL = 'indexpage'
+
+AUTH_USER_MODEL = 'myapp.CustomUser'
