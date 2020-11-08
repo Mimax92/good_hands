@@ -91,7 +91,7 @@
           <li>
             <div class="col">
               <div class="title">{{ fundation.name }}</div>
-              <div class="subtitle">{{ fundation.description }}</div>
+              <div class="subtitle">Cel i misja: {{ fundation.description }}</div>
             </div>
 
             <div class="col"><div class="text">{% for cat in fundation.categories.all %}
@@ -101,19 +101,19 @@
           </li>
           {% endfor %}
                         </ul>
-                <ul class="help--slides-pagination">
+                <ul class="help--slides-pagination" data-id="1">
                 {% if fundations.has_previous %}
-                    <a href="?page-f={{ fundations.previous_page_number }}" class="btn btn--small btn--without-border"><</a>
+                    <a href="?page-f={{ fundations.previous_page_number }}" class="btn btn--small btn--without-border"  data-page="{{ fundations.previous_page_number }}"><</a>
                 {% endif %}
                 {% for num in fundations.paginator.page_range %}
                 {% if fundations.number == num %}
-                <a href="?page-f={{ num }}" class="btn btn--small btn--without-border active">{{ num }}</a>
+                <a href="?page-f={{ num }}" class="btn btn--small btn--without-border active" data-page="{{ num }}">{{ num }}</a>
                 {% elif num > fundations.number|add:'-2' and num < fundations.number|add:'2' %}
-                    <a href="?page-f={{ num }}" class="btn btn--small btn--without-border">{{ num }}</a>
+                    <a href="?page-f={{ num }}" class="btn btn--small btn--without-border"  data-page="{{ num }}">{{ num }}</a>
                 {% endif %}
                 {% endfor %}
                 {% if fundations.has_next %}
-                    <a href="?page-f={{ fundations.next_page_number }}" class="btn btn--small btn--without-border">></a>
+                    <a href="?page-f={{ fundations.next_page_number }}" class="btn btn--small btn--without-border" data-page="{{ fundations.next_page_number }}">></a>
                 {% endif %}
                         </ul>
      </div>
@@ -130,7 +130,7 @@
           <li>
             <div class="col">
               <div class="title">{{ organization.name }}</div>
-              <div class="subtitle">{{ organization.description }}</div>
+              <div class="subtitle">Cel i misja: {{ organization.description }}</div>
             </div>
 
             <div class="col"><div class="text">{% for cat in organization.categories.all %}
@@ -140,7 +140,7 @@
           </li>
           {% endfor %}
         </ul>
-                <ul class="help--slides-pagination" >
+                <ul class="help--slides-pagination" data-id="2">
                 {% if organizations.has_previous %}
                     <a href="?page-o={{ organizations.previous_page_number }}" class="btn btn--small btn--without-border"><</a>
                 {% endif %}
@@ -166,7 +166,7 @@
           <li>
             <div class="col">
               <div class="title">{{ collection.name }}</div>
-              <div class="subtitle">{{ collection.description }}</div>
+              <div class="subtitle">Cel i misja: {{ collection.description }}</div>
             </div>
 
             <div class="col"><div class="text">{% for cat in collection.categories.all %}

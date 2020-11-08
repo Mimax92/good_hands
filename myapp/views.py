@@ -1,12 +1,12 @@
 from django.shortcuts import render
-
+from django.urls import reverse_lazy
 from .models import Instytution, Donation, Category
 from django.views import View
 from django.core.paginator import Paginator
 from .forms import CreateUserForm
 from django.contrib.auth import get_user_model, authenticate, logout, login
 from django.shortcuts import redirect
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 
 
@@ -44,9 +44,16 @@ class IndexView(View):
         }
         return render(request, "index.html", ctx)
 
-class FormView(View):
+class FormView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('login')
     def get(self, request):
-        return render(request, "form.html", )
+        categories = Category.objects.all()
+        instytutions = Instytution.objects.all()
+        ctx = {
+            "categories": categories,
+            "instytutions": instytutions,
+        }
+        return render(request, "form.html", ctx)
 
 class FormConfirView(View):
     def get(self, request):
