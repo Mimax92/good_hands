@@ -81,4 +81,5 @@ class Donation(models.Model):
     zip_code = models.CharField(max_length=6)
     pick_up_date = models.DateField(auto_now_add=False)
     pick_up_time = models.TimeField(auto_now=False, auto_now_add=False)
-    pick_up_comment = models.CharField(max_length=250)
+    pick_up_comment = models.CharField(max_length=250, null=True)
+    is_taken = models.BooleanField(default=False)

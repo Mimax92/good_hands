@@ -4,6 +4,11 @@
           <li><a href="{% url 'indexpage' %}#steps" class="btn btn--without-border">O co chodzi?</a></li>
           <li><a href="{% url 'indexpage' %}#about-us" class="btn btn--without-border">O nas</a></li>
           <li><a href="{% url 'indexpage' %}#help" class="btn btn--without-border">Fundacje i organizacje</a></li>
+            {% if request.get_full_path == "/form-confirmation" %}
+            <li><a href="#contact" class="btn btn--without-border">Kontakt</a></li>
+            </ul>
+            {% else %}
           <li><a href="{% url 'formpage' %}" class="btn btn--without-border">Przekaż dary</a></li>
           <li><a href="#contact" class="btn btn--without-border">Kontakt</a></li>
         </ul>
+       {% endif %}

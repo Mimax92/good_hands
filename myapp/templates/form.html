@@ -3,7 +3,7 @@
 {% block content%}
 
 
-{% include "mainbar.html" %}
+
 </nav>
 
 <div class="slogan container container--90">
@@ -57,8 +57,9 @@
     <div class="form--steps-container">
         <div class="form--steps-counter">Krok <span>1</span>/5</div>
 
-        <form action="form-confirmation.html" method="post">
+        <form action="{% url 'formpage' %}" method="POST">
             <!-- STEP 1: class .active is switching steps -->
+            {% csrf_token %}
             <div data-step="1" class="active">
                 <h3>Zaznacz co chcesz oddać:</h3>
                 {% for cat in categories %}
@@ -111,7 +112,7 @@
               {{ i.name }}
             {% endfor %}">
                     <label>
-                        <input type="radio" name="organization" value="{{ inst.type }}"/>
+                        <input type="radio" name="organization" value="{{ inst.id }}"/>
                         <span class="checkbox radio"></span>
                         <span class="description">
                   <div class="title" id="inst-name">{{ inst.name }}</div>
@@ -170,7 +171,7 @@
                         <div class="form-group form-group--inline">
                             <label>
                                 Uwagi dla kuriera
-                                <textarea name="more_info" rows="5" id="com-c"></textarea>
+                                <textarea name="more_info" rows="5" class="data-spec2" id="com-c"></textarea>
                             </label>
                         </div>
                     </div>

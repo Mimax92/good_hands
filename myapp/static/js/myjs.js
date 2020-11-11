@@ -27,19 +27,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
     const bagsNumber = document.getElementById("bags");
-    const catBags = document.querySelectorAll('.cat-bags')
     const nextBtn5 = document.getElementById('5');
     const checkboxes_radio = document.getElementsByName("organization");
-    const address = document.getElementById("address")
-    const city = document.getElementById("city")
-    const postcode = document.getElementById("postcode")
-    const phone = document.getElementById("phone")
-    const data = document.getElementById("data")
-    const time = document.getElementById("time")
-    const com_c = document.getElementById("com_c")
     const data_spec = document.querySelectorAll(".data-spec")
-
-
+    const data_spec2 = document.querySelectorAll(".data-spec2")
     nextBtn5.addEventListener('click', function () {
         let selected_text = "";
         for (var i = 0; i < checkboxes.length; i++) {
@@ -55,10 +46,16 @@ document.addEventListener("DOMContentLoaded", function () {
             }
                     }
         document.getElementById("bags-sum").textContent = bagsNumber.value + " worków - " + selected_text
-        // let data_spec_list = []
-        // for (var i = 0; i < data_spec.length; i++) {
-        //     data_spec_list.push()
-        // }
-        // document.getElementById("tab-1")
+        let data_string = ""
+        for (var i = 0; i < data_spec.length; i++) {
+            data_string = data_string + "<li>" + data_spec[i].value + "</li>"
+        }
+        document.getElementById("tab-1").outerHTML = "<ul>" + data_string + "</ul>"
+                let data_string2 = ""
+        for (var i = 0; i < data_spec2.length; i++) {
+            data_string2 = data_string2 + "<li>" + data_spec2[i].value + "</li>"
+        }
+        document.getElementById("tab-2").outerHTML = "<ul>" + data_string2 + "</ul>"
     });
+
     });

@@ -7,6 +7,8 @@ from .forms import CreateUserForm
 from django.contrib.auth import get_user_model, authenticate, logout, login
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+
 # Create your views here.
 
 
@@ -36,7 +38,7 @@ class IndexView(View):
         for donat in donations:
             bag = donat.quantity + bag
         ctx = {
-            "bag":bag,
+            "bag": bag,
             "instytution_count": instytution_count,
             "fundations": paginations(self, request)[0],
             "organizations": paginations(self, request)[1],
@@ -44,8 +46,10 @@ class IndexView(View):
         }
         return render(request, "index.html", ctx)
 
+
 class FormView(LoginRequiredMixin, View):
     login_url = reverse_lazy('login')
+
     def get(self, request):
         categories = Category.objects.all()
         instytutions = Instytution.objects.all()
@@ -55,13 +59,34 @@ class FormView(LoginRequiredMixin, View):
         }
         return render(request, "form.html", ctx)
 
+    def post(self, request):
+        categories = request.POST.getlist('categories')
+        bags = request.POST.get('bags')
+        organization_id = request.POST.get('organization')
+        adress = request.POST.get('address')
+
+        city = request.POST.get('city')
+        postcode = request.POST.get('postcode')
+        phone = request.POST.get('phone')
+        data = request.POST.get('data')
+        time = request.POST.get('time')
+        more_info = request.POST.get('more_info')
+        donation = Donation.objects.create(quantity=int(bags),
+                                           institution=Instytution.objects.get(id=organization_id), user=request.user,
+                                           address=adress, city=city, zip_code=postcode, pick_up_date=data,
+                                           pick_up_time=time, phone_number=phone, pick_up_comment=more_info)
+        donation.categories.set(Category.objects.filter(name__in=categories))
+        return redirect('/form-confirmation')
+
 class FormConfirView(View):
     def get(self, request):
         return render(request, "form-confirmation.html", )
 
+
 class LoginView(View):
     def get(self, request):
         return render(request, "login.html", )
+
     def post(self, request):
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -79,6 +104,7 @@ class RegisterView(View):
             "form": form
         }
         return render(request, "register.html", ctx)
+
     def post(self, request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
@@ -87,3 +113,15 @@ class RegisterView(View):
             return redirect("/login")
         return render(request, "register.html", {"form": form})
 
+
+class UserProfileView(View):
+    def get(self, request):
+        donations = Donation.objects.filter(user=request.user).order_by("is_taken")
+        return render(request, "user-profile.html", {"donations": donations})
+    def post(self, request):
+        if 'taken' in request.POST:
+            donation = Donation.objects.filter(user=request.user, id=request.POST.get('taken')).update(is_taken=True)
+            return redirect('/user')
+        if 'notaken' in request.POST:
+            donation = Donation.objects.filter(user=request.user, id=request.POST.get('notaken')).update(is_taken=False)
+            return redirect('/user')
