@@ -1,14 +1,15 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from .models import Instytution, Donation, Category
-from django.views import View
+from django.views import View, generic
 from django.core.paginator import Paginator
-from .forms import CreateUserForm
+from .forms import CreateUserForm, UserChangeForm
 from django.contrib.auth import get_user_model, authenticate, logout, login
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-
+from django.contrib import messages
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
@@ -78,7 +79,7 @@ class FormView(LoginRequiredMixin, View):
         donation.categories.set(Category.objects.filter(name__in=categories))
         return redirect('/form-confirmation')
 
-class FormConfirView(View):
+class FormConfirView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, "form-confirmation.html", )
 
@@ -114,7 +115,7 @@ class RegisterView(View):
         return render(request, "register.html", {"form": form})
 
 
-class UserProfileView(View):
+class UserProfileView(LoginRequiredMixin, View):
     def get(self, request):
         donations = Donation.objects.filter(user=request.user).order_by("is_taken")
         return render(request, "user-profile.html", {"donations": donations})
@@ -125,3 +126,31 @@ class UserProfileView(View):
         if 'notaken' in request.POST:
             donation = Donation.objects.filter(user=request.user, id=request.POST.get('notaken')).update(is_taken=False)
             return redirect('/user')
+@login_required
+def updateuserprofileview(request):
+    if request.method == 'POST' and 'dat' in request.POST:
+        form = UserChangeForm(request.POST, instance=request.user)
+        password = request.POST.get('password')
+        user = authenticate(request, email=request.user.email, password=password)
+        if form.is_valid():
+            if user is not None:
+                form.save()
+                return redirect('/update-user')
+            else:
+                messages.error(request, "Złe hasło")
+                return redirect('/update-user')
+        else:
+            return redirect('/update-user')
+
+    if request.method == 'POST' and 'pas' in request.POST:
+        form_password = PasswordChangeForm(data=request.POST, user=request.user)
+        if form_password.is_valid():
+            form_password.save()
+            messages.error(request, "Nowa hasło ustawione")
+            return redirect('/login/')
+        else:
+            return redirect('/update-user')
+    else:
+        form = UserChangeForm(instance=request.user)
+        form_password = PasswordChangeForm(user=request.user)
+        return render(request, "registration/edit_profile.html", {"form": form, "form_password": form_password})

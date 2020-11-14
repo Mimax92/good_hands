@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from myapp.views import IndexView, FormView, FormConfirView, LoginView, RegisterView, UserProfileView
+from myapp.views import IndexView, FormView, FormConfirView, LoginView, RegisterView, UserProfileView, \
+    updateuserprofileview
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -26,5 +27,7 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name="login"),
     path('logout/', auth_views.LogoutView.as_view(), name="logout"),
     path('register', RegisterView.as_view(), name="register"),
-    path('user', UserProfileView.as_view(), name="userprofile")
+    path('user', UserProfileView.as_view(), name="userprofile"),
+    path('update-user', updateuserprofileview, name="updateuserprofile"),
+# path('update-user', changepasswordview, name="updateuserprofilepassword"),
 ]

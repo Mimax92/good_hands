@@ -82,7 +82,7 @@
       </ul>
 
       <!-- SLIDE 1 -->
-      <div class="help--slides active" data-id="1">
+      <div id="slide-one" class="help--slides active" data-id="1">
         <p>W naszej bazie znajdziesz listę zweryfikowanych Fundacji, z którymi współpracujemy. Możesz sprawdzić czym się zajmują, komu pomagają i czego potrzebują.</p>
       {% for fundation in fundations %}
 
@@ -106,19 +106,19 @@
                 {% endif %}
                 {% for num in fundations.paginator.page_range %}
                 {% if fundations.number == num %}
-                <a href="?page-f={{ num }}" class="btn btn--small btn--without-border active" data-page="{{ num }}">{{ num }}</a>
+                <a href="?page-f={{ num }}#slide-one" class="btn btn--small btn--without-border active" data-page="{{ num }}">{{ num }}</a>
                 {% elif num > fundations.number|add:'-2' and num < fundations.number|add:'2' %}
-                    <a href="?page-f={{ num }}" class="btn btn--small btn--without-border"  data-page="{{ num }}">{{ num }}</a>
+                    <a href="?page-f={{ num }}#slide-one" class="btn btn--small btn--without-border"  data-page="{{ num }}">{{ num }}</a>
                 {% endif %}
                 {% endfor %}
                 {% if fundations.has_next %}
-                    <a href="?page-f={{ fundations.next_page_number }}" class="btn btn--small btn--without-border" data-page="{{ fundations.next_page_number }}">></a>
+                    <a href="?page-f={{ fundations.next_page_number }}#slide-one" class="btn btn--small btn--without-border" data-page="{{ fundations.next_page_number }}">></a>
                 {% endif %}
                         </ul>
      </div>
 
       <!-- SLIDE 2 -->
-      <div class="help--slides" data-id="2">
+      <div id="slide-two" class="help--slides" data-id="2">
         <p>
           Lorem ipsum dolor, sit amet consectetur adipisicing elit. Hic officiis mollitia dolor, neque aspernatur accusamus debitis. Ducimus, officia. Quia, sunt illum! Non iste placeat ab ipsum alias
           quos suscipit corporis!
@@ -141,23 +141,23 @@
         </ul>
                 <ul class="help--slides-pagination" data-id="2">
                 {% if organizations.has_previous %}
-                    <a href="?page-o={{ organizations.previous_page_number }}" class="btn btn--small btn--without-border"><</a>
+                    <a href="?page-o={{ organizations.previous_page_number }}#slide-one" class="btn btn--small btn--without-border"><</a>
                 {% endif %}
                 {% for num in organizations.paginator.page_range %}
                 {% if organizations.number == num %}
-                <a href="?page-o={{ num }}" class="btn btn--small btn--without-border active">{{ num }}</a>
+                <a href="?page-o={{ num }}#slide-one" class="btn btn--small btn--without-border active">{{ num }}</a>
                 {% elif num > organizations.number|add:'-2' and num < organizations.number|add:'2' %}
-                    <a href="?page-o={{ num }}" class="btn btn--small btn--without-border">{{ num }}</a>
+                    <a href="?page-o={{ num }}#slide-one" class="btn btn--small btn--without-border">{{ num }}</a>
                 {% endif %}
                 {% endfor %}
                 {% if organizations.has_next %}
-                    <a href="?page-o={{ organizations.next_page_number }}" class="btn btn--small btn--without-border">></a>
+                    <a href="?page-o={{ organizations.next_page_number }}#slide-one" class="btn btn--small btn--without-border">></a>
                 {% endif %}
                         </ul>
           </div>
 
       <!-- SLIDE 3 -->
-      <div class="help--slides" data-id="3">
+      <div id="slide-three" class="help--slides" data-id="3">
         <p>Lorem ipsum dolor sit amet, his ocurreret persequeris ea, ad utinam laudem duo. Verterem adipisci partiendo eos ne, ea his reque quaeque recteque, ne quo lobortis intellegam.</p>
       {% for collection in collections %}
 
@@ -178,17 +178,17 @@
 
                 <ul class="help--slides-pagination" >
                 {% if collections.has_previous %}
-                    <a href="?page-c={{ collections.previous_page_number }}" class="btn btn--small btn--without-border"><</a>
+                    <a href="?page-c={{ collections.previous_page_number }}#slide-one" class="btn btn--small btn--without-border"><</a>
                 {% endif %}
                 {% for num in collections.paginator.page_range %}
                 {% if collections.number == num %}
-                <a href="?page-c={{ num }}" class="btn btn--small btn--without-border active">{{ num }}</a>
+                <a href="?page-c={{ num }}#slide-one" class="btn btn--small btn--without-border active">{{ num }}</a>
                 {% elif num > collections.number|add:'-2' and num < collections.number|add:'2' %}
-                    <a href="?page-c={{ num }}" class="btn btn--small btn--without-border">{{ num }}</a>
+                    <a href="?page-c={{ num }}#slide-one" class="btn btn--small btn--without-border">{{ num }}</a>
                 {% endif %}
                 {% endfor %}
                 {% if collections.has_next %}
-                    <a href="?page-c={{ collections.next_page_number }}" class="btn btn--small btn--without-border">></a>
+                    <a href="?page-c={{ collections.next_page_number }}#slide-one" class="btn btn--small btn--without-border">></a>
                 {% endif %}
                         </ul>
 

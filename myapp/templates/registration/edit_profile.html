@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content%}
+
+</nav>
+<div class="slogan container container--90">
+
+    <form action="{% url 'updateuserprofile' %}" method="POST" enctype="multipart/form-data" style="text-align: center">
+        {% csrf_token %}
+        <div class="form-group">
+            <h3>Imię</h3>
+        {{ form.first_name }}
+        </div>
+        <div class="form-group">
+            <h3>Nazwisko</h3>
+        {{ form.last_name }}
+        </div>
+        <div class="form-group" >
+            <h3>Email</h3>
+        {{ form.email }}
+        </div>
+        <div class="form-group">
+            <h3>Hasło</h3>
+        {{ form.password }}
+        </div>
+
+        <div class="form-group">
+<h3>Wpisz hasło ponownie</h3>
+        {{ form.confirm_password }}
+        </div>
+        <div class="form-group">
+        {%if messages %}
+        {% for message in messages %}
+        <div>
+        <h3 style="background-color: #DC143C; color: blue; width: 30%; text-align: center">{{ message }}</h3>
+</div>
+        {% endfor %}
+        {% endif %}
+            </div>
+
+<div class="form-group">
+        <button type="submit" class="btn" name="dat" value="dat">Aktualizuj</button>
+</div>
+    </form>
+    <form action="{% url 'updateuserprofile' %}" method="POST" enctype="multipart/form-data" style="text-align: center">
+{{form_password.as_p}}
+        {% csrf_token %}
+        <button type="submit" class="btn" name="pas" value="pas">Aktualizuj hasło</button>
+    </form>
+</div>
+</header>
+
+
+{% endblock %}

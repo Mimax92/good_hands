@@ -2,14 +2,17 @@
 {% load static %}
 {% block content%}
 </nav>
-</header>
-      <div class="slogan container container--90">
-
-          <h2>Dane użytkownika </h2>
+<div style="text-align: center">
+              <h2>Dane użytkownika </h2>
           <h3>Imię: {{ user.first_name }}</h3>
           <h3>Nazwisko: {{ user.last_name }}</h3>
           <h3>email: {{ user.email }}</h3>
           <h2>Przekazałeś :</h2>
+</div>
+</header>
+      <div class="slogan container container--90">
+
+
 
           {% for d in donations %}
               <div name="{{ d.is_taken }}">

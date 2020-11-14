@@ -17,7 +17,7 @@
             Witaj {{ user.first_name }}
             <ul class="dropdown">
               <li><a href="{% url 'userprofile' %}">Profil</a></li>
-              <li><a href="#">Ustawienia</a></li>
+              <li><a href="{% url 'updateuserprofile' %}">Ustawienia</a></li>
                 {% if user.is_authenticated and request.user.is_superuser %}
                 <li><a href="{% url 'admin:index' %}">Ustawienia admina</a></li>
                     {% endif %}
