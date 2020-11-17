@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
             this.$buttonsContainer = $el.querySelector(".help--buttons");
             this.$slidesContainers = $el.querySelectorAll(".help--slides");
             this.currentSlide = this.$buttonsContainer.querySelector(".active").parentElement.dataset.id;
+            this.$pagButon = $el.querySelectorAll(".testcl");
             this.init();
         }
 
@@ -28,10 +29,19 @@ document.addEventListener("DOMContentLoaded", function () {
             /**
              * Pagination buttons
              */
+            this.$pagButon.forEach(item => {
+                item.addEventListener('click', e => {
+                    if (e.target.classList.contains("btn") && e.target.parentElement.classList.contains("help--slides-pagination")) {
+                        console.log("pagtest")
+
+                }
+                })
+            })
             this.$el.addEventListener("click", e => {
                 if (e.target.classList.contains("btn") && e.target.parentElement.parentElement.classList.contains("help--slides-pagination")) {
                     this.changePage(e);
                 }
+
             });
         }
 
@@ -60,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
          * TODO: callback to page change event
          */
         changePage(e) {
-            e.preventDefault();
+            // e.preventDefault();
             const page = e.target.dataset.page;
 
             console.log(page);
@@ -258,10 +268,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const is_taken_f = document.getElementsByName('False');
     const is_taken_t = document.getElementsByName('True');
     for (var i = 0; i < is_taken_f.length; i++) {
-            is_taken_f[i].classList.remove('grey')
+        is_taken_f[i].classList.remove('grey')
     }
     for (var i = 0; i < is_taken_t.length; i++) {
-            is_taken_t[i].classList.add('grey')
+        is_taken_t[i].classList.add('grey')
     }
 
 });

@@ -75,14 +75,14 @@
      <div id="help" class="help">
       <h2>Komu pomagamy?</h2>
 
-      <ul class="help--buttons">
+      <ul id="slide-one" class="help--buttons">
         <li data-id="1"><a href="#" class="btn btn--without-border active">Fundacjom</a></li>
         <li data-id="2"><a href="#" class="btn btn--without-border">Organizacjom pozarządowym</a></li>
         <li data-id="3"><a href="#" class="btn btn--without-border">Lokalnym zbiórkom</a></li>
       </ul>
 
       <!-- SLIDE 1 -->
-      <div id="slide-one" class="help--slides active" data-id="1">
+      <div class="help--slides active" data-id="1">
         <p>W naszej bazie znajdziesz listę zweryfikowanych Fundacji, z którymi współpracujemy. Możesz sprawdzić czym się zajmują, komu pomagają i czego potrzebują.</p>
       {% for fundation in fundations %}
 
@@ -94,7 +94,7 @@
             </div>
 
             <div class="col"><div class="text">{% for cat in fundation.categories.all %}
-            {{ cat.name }}
+            {{ cat.name_pl }}
               {% endfor %}
             </div></div>
           </li>
@@ -133,13 +133,13 @@
             </div>
 
             <div class="col"><div class="text">{% for cat in organization.categories.all %}
-            {{ cat.name }}
+            {{ cat.name_pl }}
               {% endfor %}
             </div></div>
           </li>
           {% endfor %}
         </ul>
-                <ul class="help--slides-pagination" data-id="2">
+                <ul class="help--slides-pagination testcl" data-id="2">
                 {% if organizations.has_previous %}
                     <a href="?page-o={{ organizations.previous_page_number }}#slide-one" class="btn btn--small btn--without-border"><</a>
                 {% endif %}
@@ -169,7 +169,7 @@
             </div>
 
             <div class="col"><div class="text">{% for cat in collection.categories.all %}
-            {{ cat.name }}
+            {{ cat.name_pl }}
               {% endfor %}
             </div></div>
           </li>
