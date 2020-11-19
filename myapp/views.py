@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from django.urls import reverse_lazy
-from .models import Instytution, Donation, Category
+from django.urls import reverse_lazy, reverse
+from .models import Instytution, Donation, Category, CustomUser
 from django.views import View, generic
 from django.core.paginator import Paginator
 from .forms import CreateUserForm, UserChangeForm
@@ -10,6 +10,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
+from rest_framework_simplejwt.tokens import RefreshToken
+from .utils import Util, account_activation_token
+from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
+import jwt
+from django.utils.encoding import force_bytes, force_text, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.contrib.auth.models import User
 # Create your views here.
 
 
@@ -47,6 +55,33 @@ class IndexView(View):
         }
         return render(request, "index.html", ctx)
 
+def validationForm(request, bags, adress, city, postcode, phone, more_info, data, time):
+    arr_true_false = []
+    if int(bags) < 0 or bags == "":
+        messages.error(request, " Liczba worków musi być większa niż 0")
+        arr_true_false.append(1)
+    if len(adress) > 200 or len(adress) < 0 or adress == "":
+        messages.error(request, " Za długi lub adres lub adres nie podany")
+        arr_true_false.append(1)
+    if len(city) > 50 or len(city) < 0 or city == "":
+        messages.error(request, " Za długa nazwa miasta lub brak nazwy")
+        arr_true_false.append(1)
+    if len(postcode) > 6 or len(postcode) < 0 or postcode == "":
+        messages.error(request, " Za długi kod pocztowy lub brak kodu ")
+        arr_true_false.append(1)
+    if len(phone) < 0 and len(phone) > 9 and any(map(str.isdigit, phone)) or phone == "":
+        messages.error(request, "Numer musi składać się z max 9 cyfr")
+        arr_true_false.append(1)
+    if len(more_info) > 250:
+        messages.error(request, "Za długi opis")
+        arr_true_false.append(1)
+    if data == "" or time == "":
+        messages.error(request, "Brak adresu lub Godziny odbioru")
+        arr_true_false.append(1)
+    if arr_true_false == []:
+        return True
+    else:
+        return False
 
 class FormView(LoginRequiredMixin, View):
     login_url = reverse_lazy('login')
@@ -65,20 +100,21 @@ class FormView(LoginRequiredMixin, View):
         bags = request.POST.get('bags')
         organization_id = request.POST.get('organization')
         adress = request.POST.get('address')
-
         city = request.POST.get('city')
         postcode = request.POST.get('postcode')
         phone = request.POST.get('phone')
         data = request.POST.get('data')
         time = request.POST.get('time')
         more_info = request.POST.get('more_info')
-        donation = Donation.objects.create(quantity=int(bags),
-                                           institution=Instytution.objects.get(id=organization_id), user=request.user,
-                                           address=adress, city=city, zip_code=postcode, pick_up_date=data,
-                                           pick_up_time=time, phone_number=phone, pick_up_comment=more_info)
-        donation.categories.set(Category.objects.filter(name__in=categories))
-        return redirect('/form-confirmation')
-
+        if validationForm(request, bags, adress, city, postcode, phone, more_info, data, time):
+            donation = Donation.objects.create(quantity=int(bags),
+                                               institution=Instytution.objects.get(id=organization_id), user=request.user,
+                                               address=adress, city=city, zip_code=postcode, pick_up_date=data,
+                                               pick_up_time=time, phone_number=phone, pick_up_comment=more_info)
+            donation.categories.set(Category.objects.filter(name__in=categories))
+            return redirect('/form-confirmation')
+        else:
+            return redirect('/form#alert')
 class FormConfirView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, "form-confirmation.html", )
@@ -111,13 +147,42 @@ class RegisterView(View):
         if form.is_valid():
             form.cleaned_data.pop("repeated_password")
             user = get_user_model().objects.create_user(**form.cleaned_data)
+            user.is_active = False
+            user.save()
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+            current_site=get_current_site(request).domain
+            relativeLink= reverse('emailverify', kwargs={'uidb64':uidb64, 'token':account_activation_token.make_token(user)})
+            activate_url = "http://"+ current_site + relativeLink
+            email_body = "Cześć " + user.first_name + " Kliknij w link poniżej celem veryfikacji adresu email \n" + activate_url
+            data ={
+                'email_body': email_body,
+                'to_email': user.email,
+                'email_subject': 'Zweryfikuj swój Email'
+            }
+            Util.send_email(data)
             return redirect("/login")
         return render(request, "register.html", {"form": form})
+class EmailVerifyView(View):
+    def get(self, request, uidb64, token):
+        try:
+            id=force_text(urlsafe_base64_decode(uidb64))
+            user=CustomUser.objects.get(pk=id)
+            if not account_activation_token.check_token(user, token):
+                return redirect("/login"+'?message='+'User already activated')
+            if user.is_active:
+                return redirect("/login")
+            user.is_active = True
+            user.save()
+            messages.success(request, 'Konto aktywowane pomyślnie')
+            return redirect("/login")
+        except Exception as ex:
+            return redirect("/register")
+
 
 
 class UserProfileView(LoginRequiredMixin, View):
     def get(self, request):
-        donations = Donation.objects.filter(user=request.user).order_by("is_taken")
+        donations = Donation.objects.filter(user=request.user).order_by("is_taken", "-don_creation")
         return render(request, "user-profile.html", {"donations": donations})
     def post(self, request):
         if 'taken' in request.POST:

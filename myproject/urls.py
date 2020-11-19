@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from myapp.views import IndexView, FormView, FormConfirView, LoginView, RegisterView, UserProfileView, \
-    updateuserprofileview
+    updateuserprofileview, EmailVerifyView
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -29,5 +29,6 @@ urlpatterns = [
     path('register', RegisterView.as_view(), name="register"),
     path('user', UserProfileView.as_view(), name="userprofile"),
     path('update-user', updateuserprofileview, name="updateuserprofile"),
+    path('email-verify/<uidb64>/<token>', EmailVerifyView.as_view(), name="emailverify")
 # path('update-user', changepasswordview, name="updateuserprofilepassword"),
 ]

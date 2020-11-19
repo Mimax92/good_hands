@@ -16,10 +16,12 @@
 
           {% for d in donations %}
               <div name="{{ d.is_taken }}">
+                  <h3>Data utworzenia: {{ d.don_creation }}.</h3>
           <h3>{{ d.quantity }} worków dla {{ d.institution.name }}.</h3>
-          <p>Rodzaj instytucji:{{ d.institution.type }}</p>
+          <p>Rodzaj instytucji: {{ d.institution.get_type_display }}</p>
           <p>Termin odbioru {{ d.pick_up_date }}</p>
           <p>Czas odbioru {{ d.pick_up_time }}</p>
+
           <p>Czy odebane
               {% if d.is_taken %}
           TAK

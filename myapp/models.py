@@ -47,7 +47,7 @@ class CustomUser(AbstractUser):
 
     objects = CustomUserManager()
 
-
+    is_verifed=models.BooleanField(default=False)
 
 class Category(models.Model):
     name =  models.CharField(max_length=200)
@@ -83,3 +83,6 @@ class Donation(models.Model):
     pick_up_time = models.TimeField(auto_now=False, auto_now_add=False)
     pick_up_comment = models.CharField(max_length=250, null=True)
     is_taken = models.BooleanField(default=False)
+    don_creation = models.DateTimeField(auto_now_add=True)
+
+
