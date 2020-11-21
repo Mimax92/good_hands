@@ -10,14 +10,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
-from rest_framework_simplejwt.tokens import RefreshToken
+
 from .utils import Util, account_activation_token
 from django.contrib.sites.shortcuts import get_current_site
-from django.conf import settings
-import jwt
+
 from django.utils.encoding import force_bytes, force_text, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.contrib.auth.models import User
+
+from validate_email import validate_email
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
 # Create your views here.
 
 
@@ -55,6 +57,7 @@ class IndexView(View):
         }
         return render(request, "index.html", ctx)
 
+
 def validationForm(request, bags, adress, city, postcode, phone, more_info, data, time):
     arr_true_false = []
     if int(bags) < 0 or bags == "":
@@ -83,6 +86,7 @@ def validationForm(request, bags, adress, city, postcode, phone, more_info, data
     else:
         return False
 
+
 class FormView(LoginRequiredMixin, View):
     login_url = reverse_lazy('login')
 
@@ -108,13 +112,16 @@ class FormView(LoginRequiredMixin, View):
         more_info = request.POST.get('more_info')
         if validationForm(request, bags, adress, city, postcode, phone, more_info, data, time):
             donation = Donation.objects.create(quantity=int(bags),
-                                               institution=Instytution.objects.get(id=organization_id), user=request.user,
+                                               institution=Instytution.objects.get(id=organization_id),
+                                               user=request.user,
                                                address=adress, city=city, zip_code=postcode, pick_up_date=data,
                                                pick_up_time=time, phone_number=phone, pick_up_comment=more_info)
             donation.categories.set(Category.objects.filter(name__in=categories))
             return redirect('/form-confirmation')
         else:
             return redirect('/form#alert')
+
+
 class FormConfirView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, "form-confirmation.html", )
@@ -150,25 +157,29 @@ class RegisterView(View):
             user.is_active = False
             user.save()
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-            current_site=get_current_site(request).domain
-            relativeLink= reverse('emailverify', kwargs={'uidb64':uidb64, 'token':account_activation_token.make_token(user)})
-            activate_url = "http://"+ current_site + relativeLink
+            current_site = get_current_site(request).domain
+            relativeLink = reverse('emailverify',
+                                   kwargs={'uidb64': uidb64, 'token': account_activation_token.make_token(user)})
+            activate_url = "http://" + current_site + relativeLink
             email_body = "Cześć " + user.first_name + " Kliknij w link poniżej celem veryfikacji adresu email \n" + activate_url
-            data ={
+            data = {
                 'email_body': email_body,
                 'to_email': user.email,
                 'email_subject': 'Zweryfikuj swój Email'
             }
             Util.send_email(data)
+            messages.success(request, 'Na adres email został wysłany link aktywacyjny')
             return redirect("/login")
         return render(request, "register.html", {"form": form})
+
+
 class EmailVerifyView(View):
     def get(self, request, uidb64, token):
         try:
-            id=force_text(urlsafe_base64_decode(uidb64))
-            user=CustomUser.objects.get(pk=id)
+            id = force_text(urlsafe_base64_decode(uidb64))
+            user = CustomUser.objects.get(pk=id)
             if not account_activation_token.check_token(user, token):
-                return redirect("/login"+'?message='+'User already activated')
+                return redirect("/login" + '?message=' + 'User already activated')
             if user.is_active:
                 return redirect("/login")
             user.is_active = True
@@ -179,11 +190,11 @@ class EmailVerifyView(View):
             return redirect("/register")
 
 
-
 class UserProfileView(LoginRequiredMixin, View):
     def get(self, request):
         donations = Donation.objects.filter(user=request.user).order_by("is_taken", "-don_creation")
         return render(request, "user-profile.html", {"donations": donations})
+
     def post(self, request):
         if 'taken' in request.POST:
             donation = Donation.objects.filter(user=request.user, id=request.POST.get('taken')).update(is_taken=True)
@@ -191,6 +202,8 @@ class UserProfileView(LoginRequiredMixin, View):
         if 'notaken' in request.POST:
             donation = Donation.objects.filter(user=request.user, id=request.POST.get('notaken')).update(is_taken=False)
             return redirect('/user')
+
+
 @login_required
 def updateuserprofileview(request):
     if request.method == 'POST' and 'dat' in request.POST:
@@ -219,3 +232,82 @@ def updateuserprofileview(request):
         form = UserChangeForm(instance=request.user)
         form_password = PasswordChangeForm(user=request.user)
         return render(request, "registration/edit_profile.html", {"form": form, "form_password": form_password})
+
+class RequestPasswordResetEmailView(View):
+    def get(self, request):
+        return render(request, 'reset-password.html')
+
+    def post(self, request):
+        email=request.POST['email']
+
+        ctx = {
+            'values': request.POST
+        }
+        if not validate_email(email):
+            messages.error(request, "Proszę podać właściwy adres email")
+            return render(request, 'reset-password.html', ctx)
+
+        user=CustomUser.objects.filter(email=email)
+        if user.exists():
+            uidb64 = urlsafe_base64_encode(force_bytes(user[0].pk))
+            current_site = get_current_site(request).domain
+            relativeLink = reverse('reset-user-password',
+                                   kwargs={'uidb64': uidb64, 'token': PasswordResetTokenGenerator().make_token(user[0])})
+            reset_url = "http://" + current_site + relativeLink
+            email_body = "Cześć " + user[0].first_name + " Aby zresetować hasło kliknij w link poniżej \n" + reset_url
+            data = {
+                'email_body': email_body,
+                'to_email': user[0].email,
+                'email_subject': 'Reset hasła'
+            }
+            Util.send_email(data)
+
+            messages.success(request, 'Wysłaliśmy Ci maila celem resetu hasła')
+
+            return render(request, 'reset-password.html')
+        messages.success(request, 'Nie ma konta powiązanego z tym adresem email')
+        return render(request, 'reset-password.html')
+class CompletePasswordReset(View):
+    def get(self, request, uidb64, token):
+        ctx = {
+            'uidb64': uidb64,
+            'token': token,
+        }
+
+        try:
+            user_id = force_text(urlsafe_base64_decode(uidb64))
+            user = CustomUser.objects.get(pk=user_id)
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                messages.info(request, "Link został już wykorzystany")
+                return render(request, 'reset-password.html')
+        except Exception as identifier:
+            pass
+        return render(request, 'set-new-password.html', ctx)
+    def post(self, request, uidb64, token):
+        ctx = {
+            'uidb64': uidb64,
+            'token': token,
+        }
+        password = request.POST['password']
+        password2 = request.POST['password2']
+        if password != password2:
+            messages.error(request, 'Hasła są różne')
+            return render(request, 'set-new-password.html', ctx)
+        if len(password) < 8:
+            messages.error(request, "Hasło za krótkie")
+            return render(request, 'set-new-password.html', ctx)
+
+        try:
+            user_id = force_text(urlsafe_base64_decode(uidb64))
+            user = CustomUser.objects.get(pk=user_id)
+            user.set_password(password)
+            user.save()
+            messages.success(request, "Hasło zmienione pomyślnie, może się zalogować za pomocą nowego hasła :)")
+            return redirect('/login/')
+        except Exception as identifier:
+            # import pdb
+            # pdb.set_trace()
+            messages.info(request, "coś poszło nie tak :(")
+            return render(request, 'set-new-password.html', ctx)
+
+        # return render(request, 'set-new-password.html', ctx)
