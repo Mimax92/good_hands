@@ -19,7 +19,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from validate_email import validate_email
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-
+import re
 # Create your views here.
 
 
@@ -39,6 +39,14 @@ def paginations(self, request):
     collections = paginator_c.get_page(page_c)
     return [fundations, organizations, collections]
 
+def passwordValidation(password):
+    reg = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,}$"
+    pat = re.compile(reg)
+    mat = re.search(pat, password)
+    if mat:
+        return True
+    else:
+        return False
 
 class IndexView(View):
     def get(self, request):
@@ -151,25 +159,31 @@ class RegisterView(View):
 
     def post(self, request):
         form = CreateUserForm(request.POST)
+
         if form.is_valid():
-            form.cleaned_data.pop("repeated_password")
-            user = get_user_model().objects.create_user(**form.cleaned_data)
-            user.is_active = False
-            user.save()
-            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-            current_site = get_current_site(request).domain
-            relativeLink = reverse('emailverify',
-                                   kwargs={'uidb64': uidb64, 'token': account_activation_token.make_token(user)})
-            activate_url = "http://" + current_site + relativeLink
-            email_body = "Cześć " + user.first_name + " Kliknij w link poniżej celem veryfikacji adresu email \n" + activate_url
-            data = {
-                'email_body': email_body,
-                'to_email': user.email,
-                'email_subject': 'Zweryfikuj swój Email'
-            }
-            Util.send_email(data)
-            messages.success(request, 'Na adres email został wysłany link aktywacyjny')
-            return redirect("/login")
+            password = form.cleaned_data["password"]
+            repeated_password = form.cleaned_data["repeated_password"]
+            if passwordValidation(password) and password == repeated_password:
+                form.cleaned_data.pop("repeated_password")
+                user = get_user_model().objects.create_user(**form.cleaned_data)
+                user.is_active = False
+                user.save()
+                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                current_site = get_current_site(request).domain
+                relativeLink = reverse('emailverify',
+                                       kwargs={'uidb64': uidb64, 'token': account_activation_token.make_token(user)})
+                activate_url = "http://" + current_site + relativeLink
+                email_body = "Cześć " + user.first_name + " Kliknij w link poniżej celem veryfikacji adresu email \n" + activate_url
+                data = {
+                    'email_body': email_body,
+                    'to_email': user.email,
+                    'email_subject': 'Zweryfikuj swój Email'
+                }
+                Util.send_email(data)
+                messages.success(request, 'Na adres email został wysłany link aktywacyjny')
+                return redirect("/login")
+            messages.info(request, 'Hasło nie spełnia wymagań lub się od siebie różnią')
+            return render(request, "register.html", {"form": form})
         return render(request, "register.html", {"form": form})
 
 
@@ -296,7 +310,9 @@ class CompletePasswordReset(View):
         if len(password) < 8:
             messages.error(request, "Hasło za krótkie")
             return render(request, 'set-new-password.html', ctx)
-
+        if passwordValidation(password) == False:
+            messages.error(request, "Hasło za musi zawierać wielkie litery, małe litery, cyfry i znaki specjalne")
+            return render(request, 'set-new-password.html', ctx)
         try:
             user_id = force_text(urlsafe_base64_decode(uidb64))
             user = CustomUser.objects.get(pk=user_id)
@@ -311,3 +327,4 @@ class CompletePasswordReset(View):
             return render(request, 'set-new-password.html', ctx)
 
         # return render(request, 'set-new-password.html', ctx)
+

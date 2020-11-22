@@ -6,7 +6,13 @@
     </header>
 
     <section class="login-page">
+                            {%if messages %}
+            {% for message in messages %}
+            <ul style="color: red"><h3>{{ message }}</h3></ul>
+            {% endfor %}
+            {% endif %}
       <h2>Załóż konto</h2>
+        <p>Pamiętaj Hasło musi mieć  wielkie litery, małe litery, cyfry i znaki specjalne oraz minimum 8 znaków</p>
       <form action="{% url 'register' %}" method="POST">
           {% csrf_token %}
         <div class="form-group">
@@ -19,17 +25,25 @@
         <div class="form-group">
           {{ form.email }}
         </div>
-        <div class="form-group">
+        <div class="form-group" id="psw">
           {{ form.password }}
         </div>
         <div class="form-group">
           {{ form.repeated_password }}
         </div>
-
+<div id="message">
+  <h3>Hasło zawiera</h3>
+  <p id="letter" class="invalid"><b>Małe</b> litery</p>
+  <p id="capital" class="invalid"><b>Duże litery</b> </p>
+  <p id="number" class="invalid"><b>liczba</b></p>
+  <p id="length" class="invalid">Minimum <b>8 Znaków</b></p>
+    <p id="special" class="invalid"> <b>Znak specialny</b></p>
+</div>
         <div class="form-group form-group--buttons">
           <a href="{% url 'login' %}#" class="btn btn--without-border">Zaloguj się</a>
           <button class="btn" type="submit">Załóż konto</button>
         </div>
       </form>
     </section>
+<script src="{% static 'js/valjs.js' %}"></script>
 {% endblock %}

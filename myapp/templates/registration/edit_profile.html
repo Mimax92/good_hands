@@ -45,6 +45,8 @@
 
     <form action="{% url 'updateuserprofile' %}" method="POST" enctype="multipart/form-data" style="text-align: center">
         <div class="form-group">
+            <h2>Tutaj możesz zmienić hasło </h2>
+                <p>Pamiętaj Hasło musi mieć  wielkie litery, małe litery, cyfry i znaki specjalne oraz minimum 8 znaków</p>
             <h3>Stare Hasło</h3>
             {{form_password.old_password}}
         </div>
