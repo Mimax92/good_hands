@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'myproject.urls'
@@ -76,11 +77,12 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'HOST': config('DB_HOST'),
+        'HOST': 'ec2-34-202-65-210.compute-1.amazonaws.com',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
+        'NAME': 'de72qf56q47oqh',
+        'USER': 'cztiujijgxkryc',
+        'PASSWORD': '053217064f4aa72a9142b50deadb51a7f41af1df9437f1b2b410b1ce961bf3aa',
+        'PORT': 5432
     }
 }
 
