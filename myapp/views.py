@@ -20,8 +20,34 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from validate_email import validate_email
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 import re
+from .forms import ContactFormEmail
+from django.core.mail import send_mail
 # Create your views here.
 
+class EmailSendContactView(View):
+    def post(self, request):
+        name = request.POST.get('name')
+        surname = request.POST.get('surname')
+        message = request.POST.get('message')
+        arr_true_false = []
+        if len(name) <= 0:
+            messages.error(request, "Musisz podać imię")
+            arr_true_false.append(1)
+        if len(surname) <= 0:
+            messages.error(request, "Musisz podać Nazwisko")
+            arr_true_false.append(1)
+        if len(message) <= 0:
+            messages.error(request, "Brak wiadomości")
+            arr_true_false.append(1)
+        if len(message) >= 250:
+            messages.error(request, "Wiadomość może mieć maksymalnie 250 znaków")
+            arr_true_false.append(1)
+        if arr_true_false != []:
+            return redirect('/#contactform')
+        else:
+            send_mail(f'Email ze strony Good Hands od {name} {surname}', message, 'testmaciej100@gmail.com', ['testmaciej100@gmail.com', ])
+            messages.success(request, "Wiadomość wysłana !")
+            return redirect('/#contactform')
 
 def paginations(self, request):
     instytutions = Instytution.objects.all()

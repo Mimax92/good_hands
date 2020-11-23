@@ -52,8 +52,14 @@
     <footer>
       <div id="contact" class="contact">
         <h2>Skontaktuj się z nami</h2>
-        <h3>Formularz kontaktowy</h3>
-        <form class="form--contact">
+        <h3 id="contactform">Formularz kontaktowy</h3>
+                                    {%if messages %}
+            {% for message in messages %}
+            <ul style="color: red"><h3>{{ message }}</h3></ul>
+            {% endfor %}
+            {% endif %}
+        <form class="form--contact" action="{% url 'sendemail' %}" method="POST">
+          {% csrf_token %}
           <div class="form-group form-group--50"><input type="text" name="name" placeholder="Imię" /></div>
           <div class="form-group form-group--50"><input type="text" name="surname" placeholder="Nazwisko" /></div>
 

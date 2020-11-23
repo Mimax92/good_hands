@@ -34,12 +34,8 @@ class UserChangeForm(UserChangeForm):
                 self.add_error('confirm_password', "Password does not match")
 
             return cleaned_data
-        # def clean(self):
-        #     cleaned_data = super(UserChangeForm, self).clean()
-        #     password = cleaned_data.get("password")
-        #     confirm_password = cleaned_data.get("confirm_password")
-        #
-        #     if password != confirm_password:
-        #         raise forms.ValidationError(
-        #             "password and confirm_password does not match"
-        #         )
+
+class ContactFormEmail(forms.Form):
+    fromemail = forms.EmailField(required=True)
+    subject = forms.CharField(required=True)
+    message = forms.CharField(required=True)
